@@ -1,0 +1,40 @@
+
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - Dockerfile
+      - entrypoint.sh
+      - deploy.py
+      - azure-pipelines-build-image.yml
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  - name: imageRepository
+    value: 'nalakan/pbi_blue_green_dep_v1'   # change to your Docker Hub username
+  - name: imageTag
+    value: '$(Build.BuildId)'
+
+steps:
+- checkout: self
+
+# ✅ Normalize line endings for all .sh files before building the image
+- script: |
+    echo "Normalizing .sh files to LF line endings..."
+    find $(Build.SourcesDirectory) -type f -name "*.sh" -exec sed -i 's/\r$//' {} +
+  displayName: Normalize shell scripts
+
+- task: Docker@2
+  displayName: Build and push image to Docker Hub
+  inputs:
+    command: buildAndPush
+    repository: $(imageRepository)
+    dockerfile: Dockerfile
+    containerRegistry: dockerhub-connection    # service connection name
+    tags: |
+      $(imageTag)
+      latest

@@ -1,0 +1,243 @@
+# trigger: none   # run manually
+
+# variables:
+#   - group: Fabric-ServicePrincipal   # contains FabricClientId, FabricClientSecret, FabricTenantId
+#   - name: imageRepository
+#     value: 'nalakan/pbi_blue_green_dep_v1'
+#   - name: imageTag
+#     value: 'latest'
+
+#   - name: ProdWorkspaceName
+#     value: 'BlueGreen-Prod'
+#   - name: DevWorkspaceName
+#     value: 'BlueGreen-Dev'
+#   - name: TestWorkspaceName
+#     value: 'BlueGreen-Test'
+#   - name: ReportName
+#     value: 'Blue Green Prod Report'
+#   - name: SemanticModelName
+#     value: 'Blue Green Prod Report'
+
+# pool:
+#   vmImage: 'ubuntu-latest'
+
+# stages:
+# - stage: Deploy
+#   jobs:
+#   - job: DeployToEnvs
+#     displayName: Deploy Dev / Test / Prod_New via Docker image
+#     steps:
+#     - task: DockerInstaller@0
+#       displayName: Ensure docker CLI exists
+#       inputs:
+#         dockerVersion: '20.10.7'
+
+#     - script: docker pull $(imageRepository):$(imageTag)
+#       displayName: Pull image
+
+#     # Deploy to Dev
+#     - script: |
+#         docker run --rm \
+#           -e FABRIC_CLIENT_ID=$(FabricClientId) \
+#           -e FABRIC_CLIENT_SECRET=$(FabricClientSecret) \
+#           -e FABRIC_TENANT_ID=$(FabricTenantId) \
+#           $(imageRepository):$(imageTag) \
+#             --source-workspace "$(ProdWorkspaceName)" \
+#             --target-workspace "$(DevWorkspaceName)" \
+#             --report-name "$(ReportName)" \
+#             --semantic-model-name "$(SemanticModelName)" \
+#             --prefix dev-
+#       displayName: Deploy to Dev
+
+#     # Deploy to Test
+#     - script: |
+#         docker run --rm \
+#           -e FABRIC_CLIENT_ID=$(FabricClientId) \
+#           -e FABRIC_CLIENT_SECRET=$(FabricClientSecret) \
+#           -e FABRIC_TENANT_ID=$(FabricTenantId) \
+#           $(imageRepository):$(imageTag) \
+#             --source-workspace "$(ProdWorkspaceName)" \
+#             --target-workspace "$(TestWorkspaceName)" \
+#             --report-name "$(ReportName)" \
+#             --semantic-model-name "$(SemanticModelName)" \
+#             --prefix test-
+#       displayName: Deploy to Test
+
+#     # Deploy to Prod_New
+#     - script: |
+#         docker run --rm \
+#           -e FABRIC_CLIENT_ID=$(FabricClientId) \
+#           -e FABRIC_CLIENT_SECRET=$(FabricClientSecret) \
+#           -e FABRIC_TENANT_ID=$(FabricTenantId) \
+#           $(imageRepository):$(imageTag) \
+#             --source-workspace "$(ProdWorkspaceName)" \
+#             --target-workspace "$(ProdWorkspaceName)" \
+#             --report-name "$(ReportName)" \
+#             --semantic-model-name "$(SemanticModelName)" \
+#             --prefix prod_new_
+#       displayName: Deploy to Prod_New
+
+# trigger: none   # run manually
+
+# variables:
+#   - group: Fabric-ServicePrincipal   # contains FabricClientId, FabricClientSecret, FabricTenantId
+#   - name: imageRepository
+#     value: 'nalakan/pbi_blue_green_dep_v1'
+#   - name: imageTag
+#     value: 'latest'
+
+#   - name: ProdWorkspaceName
+#     value: 'BlueGreen-Prod'
+#   - name: DevWorkspaceName
+#     value: 'BlueGreen-Dev'
+#   - name: TestWorkspaceName
+#     value: 'BlueGreen-Test'
+#   - name: ReportName
+#     value: 'Blue Green Prod'
+#   - name: SemanticModelName
+#     value: 'Blue Green Prod'
+
+# pool:
+#   vmImage: 'ubuntu-latest'
+
+# stages:
+# - stage: Deploy
+#   jobs:
+#   - job: DeployToEnvs
+#     displayName: Deploy Dev / Test / Prod_New via Docker image
+#     steps:
+#     - task: DockerInstaller@0
+#       displayName: Ensure docker CLI exists
+#       inputs:
+#         dockerVersion: '20.10.7'
+
+#     - script: docker pull $(imageRepository):$(imageTag)
+#       displayName: Pull image
+
+#     ### NEW STEP: normalize all .sh files before running Docker
+#     - script: |
+#         echo "Normalizing .sh files to LF line endings..."
+#         find $(Build.SourcesDirectory) -type f -name "*.sh" -exec sed -i 's/\r$//' {} +
+#       displayName: Normalize shell scripts
+
+#     # Deploy to Dev
+#     - script: |
+#         docker run --rm \
+#           -e FABRIC_CLIENT_ID=$(FabricClientId) \
+#           -e FABRIC_CLIENT_SECRET=$(FabricClientSecret) \
+#           -e FABRIC_TENANT_ID=$(FabricTenantId) \
+#           $(imageRepository):$(imageTag) \
+#             --source-workspace "$(ProdWorkspaceName)" \
+#             --target-workspace "$(DevWorkspaceName)" \
+#             --report-name "$(ReportName)" \
+#             --semantic-model-name "$(SemanticModelName)" \
+#             --prefix Dev-
+#       displayName: Deploy to Dev
+
+#     # Deploy to Test
+#     - script: |
+#         docker run --rm \
+#           -e FABRIC_CLIENT_ID=$(FabricClientId) \
+#           -e FABRIC_CLIENT_SECRET=$(FabricClientSecret) \
+#           -e FABRIC_TENANT_ID=$(FabricTenantId) \
+#           $(imageRepository):$(imageTag) \
+#             --source-workspace "$(ProdWorkspaceName)" \
+#             --target-workspace "$(TestWorkspaceName)" \
+#             --report-name "$(ReportName)" \
+#             --semantic-model-name "$(SemanticModelName)" \
+#             --prefix Test-
+#       displayName: Deploy to Test
+
+#     # Deploy to Prod_New
+#     - script: |
+#         docker run --rm \
+#           -e FABRIC_CLIENT_ID=$(FabricClientId) \
+#           -e FABRIC_CLIENT_SECRET=$(FabricClientSecret) \
+#           -e FABRIC_TENANT_ID=$(FabricTenantId) \
+#           $(imageRepository):$(imageTag) \
+#             --source-workspace "$(ProdWorkspaceName)" \
+#             --target-workspace "$(ProdWorkspaceName)" \
+#             --report-name "$(ReportName)" \
+#             --semantic-model-name "$(SemanticModelName)" \
+#             --prefix Prod_New_
+#       displayName: Deploy to Prod_New
+
+trigger: none   # run manually
+
+variables:
+  # Service principal credentials
+  - group: Fabric-ServicePrincipal   # contains FabricClientId, FabricClientSecret, FabricTenantId
+
+  # Deployment settings (workspace + report/model names)
+  - group: Fabric-DeploymentSettings
+
+  # Docker image details
+  - name: imageRepository
+    value: 'nalakan/pbi_blue_green_dep_v1'
+  - name: imageTag
+    value: 'latest'
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+- stage: Deploy
+  jobs:
+  - job: DeployToEnvs
+    displayName: Deploy Dev / Test / Prod_New via Docker image
+    steps:
+    - task: DockerInstaller@0
+      displayName: Ensure docker CLI exists
+      inputs:
+        dockerVersion: '20.10.7'
+
+    - script: docker pull $(imageRepository):$(imageTag)
+      displayName: Pull image
+
+    # Normalize .sh files (avoid CRLF issues on Linux)
+    - script: |
+        echo "Normalizing .sh files to LF line endings..."
+        find $(Build.SourcesDirectory) -type f -name "*.sh" -exec sed -i 's/\r$//' {} +
+      displayName: Normalize shell scripts
+
+    # Deploy to Dev
+    - script: |
+        docker run --rm \
+          -e FABRIC_CLIENT_ID=$(FabricClientId) \
+          -e FABRIC_CLIENT_SECRET=$(FabricClientSecret) \
+          -e FABRIC_TENANT_ID=$(FabricTenantId) \
+          $(imageRepository):$(imageTag) \
+            --source-workspace "$(ProdWorkspaceName)" \
+            --target-workspace "$(DevWorkspaceName)" \
+            --report-name "$(FabricReportName)" \
+            --semantic-model-name "$(FabricModelName)" \
+            --prefix Dev-
+      displayName: Deploy to Dev
+
+    # Deploy to Test
+    - script: |
+        docker run --rm \
+          -e FABRIC_CLIENT_ID=$(FabricClientId) \
+          -e FABRIC_CLIENT_SECRET=$(FabricClientSecret) \
+          -e FABRIC_TENANT_ID=$(FabricTenantId) \
+          $(imageRepository):$(imageTag) \
+            --source-workspace "$(ProdWorkspaceName)" \
+            --target-workspace "$(TestWorkspaceName)" \
+            --report-name "$(FabricReportName)" \
+            --semantic-model-name "$(FabricModelName)" \
+            --prefix Test-
+      displayName: Deploy to Test
+
+    # Deploy to Prod_New
+    - script: |
+        docker run --rm \
+          -e FABRIC_CLIENT_ID=$(FabricClientId) \
+          -e FABRIC_CLIENT_SECRET=$(FabricClientSecret) \
+          -e FABRIC_TENANT_ID=$(FabricTenantId) \
+          $(imageRepository):$(imageTag) \
+            --source-workspace "$(ProdWorkspaceName)" \
+            --target-workspace "$(ProdWorkspaceName)" \
+            --report-name "$(FabricReportName)" \
+            --semantic-model-name "$(FabricModelName)" \
+            --prefix Prod_New_
+      displayName: Deploy to Prod_New
